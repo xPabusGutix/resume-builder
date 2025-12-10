@@ -4,7 +4,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ResumeData } from "../types";
 
 // Initialize API Key securely on the server
-const GEMINI_API_KEY = process.env.API_KEY || '';
+const GEMINI_API_KEY =
+  process.env.GEMINI_API_KEY || process.env.API_KEY || '';
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
