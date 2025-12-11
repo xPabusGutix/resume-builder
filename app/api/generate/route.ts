@@ -1,20 +1,21 @@
 import { NextResponse } from 'next/server';
 import { generateResumeFromText } from '@/services/geminiService';
+import { ResumeGenerationRequest } from '@/types';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
-    const { text } = await request.json();
+    const { text, jobDescription, jobLink } = (await request.json()) as ResumeGenerationRequest;
 
-    if (typeof text !== 'string' || !text.trim()) {
+    if (!text?.trim() && !jobDescription?.trim() && !jobLink?.trim()) {
       return NextResponse.json(
-        { error: 'Se requiere un texto válido para generar el currículum.' },
+        { error: 'Comparte al menos tu CV, la descripción del puesto o un enlace de la vacante.' },
         { status: 400 }
       );
     }
 
-    const resume = await generateResumeFromText(text);
+    const resume = await generateResumeFromText({ text: text?.trim() || '', jobDescription, jobLink });
     return NextResponse.json(resume, { status: 200 });
   } catch (error) {
     console.error('Error generando el currículum', error);

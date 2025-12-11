@@ -32,6 +32,12 @@ export interface ResumeData {
   languages: string[];
 }
 
+export interface ResumeGenerationRequest {
+  text: string;
+  jobDescription?: string;
+  jobLink?: string;
+}
+
 export const INITIAL_RESUME_DATA: ResumeData = {
   personalInfo: {
     fullName: "Nombre Apellido",

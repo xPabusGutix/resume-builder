@@ -1,7 +1,7 @@
 'use server';
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { ResumeData } from "../types";
+import { ResumeData, ResumeGenerationRequest } from "../types";
 
 // Initialize API Key securely on the server
 const GEMINI_API_KEY =
@@ -68,7 +68,7 @@ const resumeSchema = {
   required: ["personalInfo", "summary", "experience", "education", "skills"],
 };
 
-export const generateResumeFromText = async (text: string): Promise<ResumeData> => {
+export const generateResumeFromText = async ({ text, jobDescription, jobLink }: ResumeGenerationRequest): Promise<ResumeData> => {
   if (!GEMINI_API_KEY) {
     throw new Error("API Key is missing. Check your environment configuration.");
   }
@@ -93,15 +93,22 @@ export const generateResumeFromText = async (text: string): Promise<ResumeData> 
     6.  **Tone**: Professional, confident, concise.
 
     INPUT HANDLING:
-    - The input might be raw text, a list of jobs, or a LinkedIn PDF dump.
+    - The input might be raw text, una lista de empleos o un PDF de LinkedIn.
     - Ignore irrelevant text (like "References available upon request").
     - If the input is very short, creatively expand on implied duties for that specific job title to provide a good starting draft.
+    - Si se comparte una descripción de puesto, adapta el resumen y los logros para enfatizar competencias solicitadas (sin inventar información no presente).
+    - Si se incluye un enlace de vacante, úsalo solo como referencia contextual. No inventes detalles ni nombres de empresa que no aparezcan en el texto proporcionado.
   `;
 
   try {
+    const roleContext = jobDescription
+      ? `\n\nTARGET JOB DESCRIPTION PROVIDED BY USER:\n${jobDescription}\n`
+      : '';
+    const linkContext = jobLink ? `\n\nJOB POSTING LINK (reference only, do not fabricate unseen details): ${jobLink}` : '';
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Please create a professional resume from the following text:\n\n${text}`,
+      contents: `Please create a professional resume from the following text:\n\n${text || 'User did not provide resume text.'}${roleContext}${linkContext}`,
       config: {
         systemInstruction: systemInstruction,
         responseMimeType: "application/json",
