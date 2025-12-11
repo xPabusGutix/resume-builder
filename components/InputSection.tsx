@@ -3,25 +3,32 @@
 import React, { useState, useRef } from 'react';
 import { Spinner } from './Spinner';
 import * as mammoth from 'mammoth';
+import { ResumeGenerationRequest } from '../types';
 
 interface InputSectionProps {
-  onGenerate: (text: string) => Promise<void>;
+  onGenerate: (payload: ResumeGenerationRequest) => Promise<void>;
   isLoading: boolean;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) => {
   const [inputText, setInputText] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [jobLink, setJobLink] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const handleGenerate = async () => {
-    if (!inputText.trim()) {
-      setError("Por favor ingresa información o sube un archivo.");
+    if (!inputText.trim() && !jobDescription.trim() && !jobLink.trim()) {
+      setError("Comparte tu CV, descripción del puesto o enlace para personalizar el resultado.");
       return;
     }
     setError(null);
-    await onGenerate(inputText);
+    await onGenerate({
+      text: inputText.trim(),
+      jobDescription: jobDescription.trim() || undefined,
+      jobLink: jobLink.trim() || undefined,
+    });
   };
 
   const processFile = (file: File) => {
@@ -91,7 +98,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoadin
       </div>
 
       <div className="flex-grow flex flex-col gap-4">
-        <div 
+        <div
           className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg transition-colors duration-200 ${dragActive ? 'border-pr-blue bg-blue-50' : 'border-gray-300 bg-slate-50'}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -128,6 +135,45 @@ Educación:
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
+
+        <div className="bg-gradient-to-br from-indigo-50 via-white to-blue-50 border border-indigo-100 rounded-lg p-4 space-y-3 shadow-inner">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase font-bold text-pr-blue tracking-wide">Opcional</p>
+              <h3 className="text-lg font-bold text-slate-800">Personaliza para tu próximo empleo</h3>
+              <p className="text-sm text-slate-600">Agrega la descripción del puesto o el enlace de la vacante para adaptar el CV a esa oportunidad.</p>
+            </div>
+            <span className="text-[10px] uppercase bg-white text-pr-blue border border-pr-blue/30 rounded-full px-2 py-1 font-semibold">Mejor coincidencia</span>
+          </div>
+
+          <label className="block">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-semibold text-slate-800">Descripción del puesto</span>
+              <span className="text-[11px] text-slate-500">Pega el perfil completo</span>
+            </div>
+            <textarea
+              className="w-full min-h-[110px] p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pr-blue focus:border-transparent text-sm text-slate-800 bg-white"
+              placeholder="Ej. Buscamos un Gerente de Ventas con experiencia en SaaS, manejo de KPIs y liderazgo de equipos..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+            />
+          </label>
+
+          <label className="block">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-semibold text-slate-800">Enlace de la vacante</span>
+              <span className="text-[11px] text-slate-500">LinkedIn, Indeed, etc.</span>
+            </div>
+            <input
+              type="url"
+              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pr-blue focus:border-transparent text-sm text-slate-800 bg-white"
+              placeholder="https://www.linkedin.com/jobs/view/..."
+              value={jobLink}
+              onChange={(e) => setJobLink(e.target.value)}
+            />
+            <p className="text-xs text-slate-500 mt-1">Usaremos esta referencia para resaltar palabras clave; no inventaremos detalles que no compartas.</p>
+          </label>
+        </div>
       </div>
 
       {error && (

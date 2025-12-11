@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { INITIAL_RESUME_DATA, ResumeData } from '../types';
+import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { ResumePreview, TemplateStyle } from './ResumePreview';
 
@@ -74,7 +74,7 @@ const ResumeBuilder: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleGenerate = useCallback(async (text: string) => {
+  const handleGenerate = useCallback(async ({ text, jobDescription, jobLink }: ResumeGenerationRequest) => {
     setIsLoading(true);
     try {
       const response = await fetch('/api/generate', {
@@ -82,7 +82,7 @@ const ResumeBuilder: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, jobDescription, jobLink }),
       });
 
       if (!response.ok) {
