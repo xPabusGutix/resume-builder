@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
@@ -125,7 +127,7 @@ const ResumeBuilder: React.FC = () => {
     }
   }, []);
 
-  const handlePrint = () => {
+  const handleDownloadPDF = async () => {
     const shouldRevealPreview = isMobile && !showPreviewMobile;
 
     if (shouldRevealPreview) {
@@ -134,18 +136,43 @@ const ResumeBuilder: React.FC = () => {
 
     const waitForRender = shouldRevealPreview ? 450 : 150;
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const previewElement = document.getElementById('resume-preview');
 
       if (!previewElement) {
-        alert('No se encontró la vista previa para imprimir.');
+        alert('No se encontró la vista previa para generar el PDF.');
         return;
       }
 
       previewElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      setTimeout(() => {
-        window.print();
+      setTimeout(async () => {
+        try {
+          const canvas = await html2canvas(previewElement as HTMLElement, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+          const imgData = canvas.toDataURL('image/png');
+
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          let heightLeft = pdfHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+          heightLeft -= pdf.internal.pageSize.getHeight();
+
+          while (heightLeft > 0) {
+            position = heightLeft - pdfHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pdf.internal.pageSize.getHeight();
+          }
+
+          pdf.save(`${(new Date()).toISOString().slice(0,10)}-resume.pdf`);
+        } catch (err) {
+          console.error('Error generating PDF', err);
+          alert('No se pudo generar el PDF. Intenta nuevamente.');
+        }
       }, 150);
     }, waitForRender);
   };
@@ -166,7 +193,7 @@ const ResumeBuilder: React.FC = () => {
             </div>
             <div className="flex items-center gap-4">
                <button 
-                onClick={handlePrint}
+                onClick={handleDownloadPDF}
                 className="hidden md:flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg transform active:scale-95"
                >
                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -329,7 +356,7 @@ const ResumeBuilder: React.FC = () => {
           {/* Mobile Print Button */}
           <div className="lg:hidden w-full mb-4 no-print">
              <button 
-                onClick={handlePrint}
+               onClick={handleDownloadPDF}
                 className="w-full flex justify-center items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 px-4 py-4 rounded-xl font-bold transition-colors shadow-lg"
                >
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
