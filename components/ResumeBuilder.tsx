@@ -238,6 +238,8 @@ const ResumeBuilder: React.FC = () => {
   const handleDownloadPDF = async () => {
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const shouldRevealPreview = isMobile && !showPreviewMobile;
+    const previousMobileState = showPreviewMobile;
+    let printablePreview: HTMLElement | null = null;
 
     if (shouldRevealPreview) {
       setShowPreviewMobile(true);
@@ -246,57 +248,47 @@ const ResumeBuilder: React.FC = () => {
 
     await wait(75);
 
-    let previewElement = document.getElementById('resume-preview');
+    const previewElement = document.getElementById('resume-preview');
 
     if (!(previewElement instanceof HTMLElement)) {
       alert('No se encontró la vista previa para generar el PDF.');
       return;
     }
-
-    // Ensure we have the latest node in case the preview just mounted
-    previewElement = document.getElementById('resume-preview') as HTMLElement | null;
-    if (!(previewElement instanceof HTMLElement)) {
-      alert('No se encontró la vista previa para generar el PDF.');
-      return;
-    }
-
-    let originalInlineStyles: string | null = null;
 
     try {
       await (document.fonts?.ready ?? Promise.resolve());
-      originalInlineStyles = previewElement.getAttribute('style');
-
-      const computedStyle = window.getComputedStyle(previewElement);
-      const wasHidden = computedStyle.display === 'none';
-
-      if (wasHidden) {
-        previewElement.style.display = 'block';
-        previewElement.style.visibility = 'hidden';
-        previewElement.style.position = 'absolute';
-        previewElement.style.inset = '0';
-      }
-
-      previewElement.style.width = '8.5in';
-      previewElement.style.maxWidth = '8.5in';
-      previewElement.style.minHeight = '11in';
-      previewElement.style.borderRadius = '0';
-      previewElement.style.border = 'none';
-      previewElement.style.boxShadow = 'none';
-      previewElement.style.backgroundImage = 'none';
+      printablePreview = previewElement.cloneNode(true) as HTMLElement;
+      printablePreview.id = 'resume-preview-print';
+      printablePreview.style.position = 'absolute';
+      printablePreview.style.top = '0';
+      printablePreview.style.left = '-9999px';
+      printablePreview.style.width = '8.5in';
+      printablePreview.style.maxWidth = '8.5in';
+      printablePreview.style.minHeight = '11in';
+      printablePreview.style.borderRadius = '0';
+      printablePreview.style.border = 'none';
+      printablePreview.style.boxShadow = 'none';
+      printablePreview.style.backgroundImage = 'none';
+      printablePreview.style.transform = 'none';
+      document.body.appendChild(printablePreview);
 
       await wait(120);
 
-      const rect = previewElement.getBoundingClientRect();
-      if (!rect.width || !rect.height) {
+      const rect = printablePreview.getBoundingClientRect();
+      const previewHeight = Math.ceil(printablePreview.scrollHeight || rect.height);
+      const previewWidth = Math.ceil(rect.width);
+      if (!previewWidth || !previewHeight) {
         throw new Error('preview-not-ready');
       }
 
-      const canvas = await html2canvas(previewElement, {
+      const canvas = await html2canvas(printablePreview, {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: Math.ceil(rect.width),
-        windowHeight: Math.ceil(previewElement.scrollHeight),
+        width: previewWidth,
+        height: previewHeight,
+        windowWidth: previewWidth,
+        windowHeight: previewHeight,
         scrollX: 0,
         scrollY: 0,
       });
@@ -329,10 +321,11 @@ const ResumeBuilder: React.FC = () => {
         alert('No se pudo generar el PDF. Intenta nuevamente.');
       }
     } finally {
-      if (originalInlineStyles) {
-        previewElement.setAttribute('style', originalInlineStyles);
-      } else {
-        previewElement.removeAttribute('style');
+      if (printablePreview?.parentNode) {
+        printablePreview.parentNode.removeChild(printablePreview);
+      }
+      if (!previousMobileState) {
+        setShowPreviewMobile(previousMobileState);
       }
     }
   };
