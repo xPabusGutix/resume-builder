@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
@@ -257,7 +259,31 @@ const ResumeBuilder: React.FC = () => {
     await wait(250);
 
     try {
-      window.print();
+      const canvas = await html2canvas(previewElement, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        windowWidth: previewElement.scrollWidth,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'pt', 'letter');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+      const renderWidth = imgWidth * ratio;
+      const renderHeight = imgHeight * ratio;
+      const offsetX = (pageWidth - renderWidth) / 2;
+      const offsetY = (pageHeight - renderHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', offsetX, offsetY, renderWidth, renderHeight);
+      pdf.save(`${resumeData.personalInfo.fullName || 'resume'}.pdf`);
+    } catch (error) {
+      console.error('Error generando el PDF', error);
+      alert('No se pudo generar el PDF. Inténtalo nuevamente o intenta con otro navegador.');
     } finally {
       if (!previousMobileState) {
         setShowPreviewMobile(previousMobileState);
