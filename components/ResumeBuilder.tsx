@@ -262,6 +262,26 @@ const ResumeBuilder: React.FC = () => {
       return;
     }
 
+    const { width: rectWidth, height: rectHeight } =
+      previewElement.getBoundingClientRect();
+    const computedWidth = Math.max(
+      previewElement.scrollWidth,
+      Math.round(rectWidth)
+    );
+    const computedHeight = Math.max(
+      previewElement.scrollHeight,
+      Math.round(rectHeight)
+    );
+
+    if (!computedWidth || !computedHeight) {
+      alert('No se pudo preparar la vista previa para generar el PDF.');
+      if (!previousMobileState) {
+        setShowPreviewMobile(previousMobileState);
+      }
+      setIsDownloading(false);
+      return;
+    }
+
     previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     await wait(250);
 
@@ -272,7 +292,10 @@ const ResumeBuilder: React.FC = () => {
         scale: 2,
         backgroundColor: '#ffffff',
         useCORS: true,
-        windowWidth: previewElement.scrollWidth,
+        width: computedWidth,
+        height: computedHeight,
+        windowWidth: Math.max(computedWidth, window.innerWidth),
+        windowHeight: Math.max(computedHeight, window.innerHeight),
       });
 
       const imgData = canvas.toDataURL('image/png');
