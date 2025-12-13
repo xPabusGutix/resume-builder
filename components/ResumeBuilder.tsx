@@ -339,7 +339,29 @@ const ResumeBuilder: React.FC = () => {
         ctx.fillRect(0, 0, imgWidth, sliceHeight);
         ctx.drawImage(canvas, 0, positionY, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
 
-        const imgData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+        const imgData = await new Promise<string>((resolve, reject) => {
+          sliceCanvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('No se pudo preparar la imagen del PDF.'));
+                return;
+              }
+
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                  resolve(reader.result);
+                } else {
+                  reject(new Error('No se pudo codificar la imagen del PDF.'));
+                }
+              };
+              reader.onerror = () => reject(new Error('Error al leer la imagen del PDF.'));
+              reader.readAsDataURL(blob);
+            },
+            'image/jpeg',
+            0.95,
+          );
+        });
 
         if (pageIndex > 0) {
           pdf.addPage();
