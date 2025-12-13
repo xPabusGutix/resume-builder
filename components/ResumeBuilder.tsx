@@ -282,11 +282,21 @@ const ResumeBuilder: React.FC = () => {
 
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
+
+      if (!imgWidth || !imgHeight) {
+        throw new Error('No se pudo capturar la vista previa del CV.');
+      }
+
       const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
       const renderWidth = imgWidth * ratio;
       const renderHeight = imgHeight * ratio;
       const offsetX = (pageWidth - renderWidth) / 2;
       const offsetY = (pageHeight - renderHeight) / 2;
+
+      const dimensions = [renderWidth, renderHeight, offsetX, offsetY];
+      if (dimensions.some((value) => !Number.isFinite(value))) {
+        throw new Error('Dimensiones inválidas al generar el PDF.');
+      }
 
       pdf.addImage(imgData, 'PNG', offsetX, offsetY, renderWidth, renderHeight);
       pdf.save(`${resumeData.personalInfo.fullName || 'resume'}.pdf`);
