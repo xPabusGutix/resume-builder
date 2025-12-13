@@ -246,16 +246,17 @@ const ResumeBuilder: React.FC = () => {
 
     await wait(75);
 
-    const previewElement = document.getElementById('resume-preview');
+    let previewElement = document.getElementById('resume-preview');
 
     if (!(previewElement instanceof HTMLElement)) {
       alert('No se encontró la vista previa para generar el PDF.');
       return;
     }
 
-    const rect = previewElement.getBoundingClientRect();
-    if (!rect.width || !rect.height) {
-      alert('La vista previa no está lista para exportar. Intenta nuevamente.');
+    // Ensure we have the latest node in case the preview just mounted
+    previewElement = document.getElementById('resume-preview') as HTMLElement | null;
+    if (!(previewElement instanceof HTMLElement)) {
+      alert('No se encontró la vista previa para generar el PDF.');
       return;
     }
 
@@ -265,6 +266,16 @@ const ResumeBuilder: React.FC = () => {
       await (document.fonts?.ready ?? Promise.resolve());
       originalInlineStyles = previewElement.getAttribute('style');
 
+      const computedStyle = window.getComputedStyle(previewElement);
+      const wasHidden = computedStyle.display === 'none';
+
+      if (wasHidden) {
+        previewElement.style.display = 'block';
+        previewElement.style.visibility = 'hidden';
+        previewElement.style.position = 'absolute';
+        previewElement.style.inset = '0';
+      }
+
       previewElement.style.width = '8.5in';
       previewElement.style.maxWidth = '8.5in';
       previewElement.style.minHeight = '11in';
@@ -273,14 +284,18 @@ const ResumeBuilder: React.FC = () => {
       previewElement.style.boxShadow = 'none';
       previewElement.style.backgroundImage = 'none';
 
-      await wait(100);
+      await wait(120);
 
-      const previewRect = previewElement.getBoundingClientRect();
+      const rect = previewElement.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        throw new Error('preview-not-ready');
+      }
+
       const canvas = await html2canvas(previewElement, {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: Math.ceil(previewRect.width),
+        windowWidth: Math.ceil(rect.width),
         windowHeight: Math.ceil(previewElement.scrollHeight),
         scrollX: 0,
         scrollY: 0,
@@ -308,7 +323,11 @@ const ResumeBuilder: React.FC = () => {
       pdf.save(`${new Date().toISOString().slice(0, 10)}-resume.pdf`);
     } catch (err) {
       console.error('Error generating PDF', err);
-      alert('No se pudo generar el PDF. Intenta nuevamente.');
+      if (err instanceof Error && err.message === 'preview-not-ready') {
+        alert('La vista previa no está lista para exportar. Intenta nuevamente.');
+      } else {
+        alert('No se pudo generar el PDF. Intenta nuevamente.');
+      }
     } finally {
       if (originalInlineStyles) {
         previewElement.setAttribute('style', originalInlineStyles);
