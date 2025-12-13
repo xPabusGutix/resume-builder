@@ -9,8 +9,18 @@ export type ThemeOverrides = {
   accentColor?: string;
   headerBgColor?: string;
   headerTextColor?: string;
-  bodyFont?: 'sans' | 'serif';
+  bodyFont?: FontFamilyId;
 };
+
+export type FontFamilyId = 'lato' | 'inter' | 'playfair' | 'source-serif' | 'poppins';
+
+export const FONT_OPTIONS: { id: FontFamilyId; label: string; className: string; description: string; category: 'Sans' | 'Serif' }[] = [
+  { id: 'lato', label: 'Lato', className: 'font-lato', description: 'Sans versátil y moderno', category: 'Sans' },
+  { id: 'inter', label: 'Inter', className: 'font-inter', description: 'Sans técnica y minimalista', category: 'Sans' },
+  { id: 'poppins', label: 'Poppins', className: 'font-poppins', description: 'Sans redondeada y amigable', category: 'Sans' },
+  { id: 'playfair', label: 'Playfair Display', className: 'font-playfair', description: 'Serif elegante y clásica', category: 'Serif' },
+  { id: 'source-serif', label: 'Source Serif 4', className: 'font-source-serif', description: 'Serif legible y confiable', category: 'Serif' },
+];
 
 type TemplateStyleConfig = {
   headerBgColor: string;
@@ -21,7 +31,7 @@ type TemplateStyleConfig = {
   sidebarBgColor: string;
   sidebarBorderColor: string;
   sidebarTextColor: string;
-  bodyFont: 'font-sans' | 'font-serif';
+  bodyFont: FontFamilyId;
   pillBgColor: string;
   pillTextColor: string;
 };
@@ -35,7 +45,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#f8fafc',
     sidebarBorderColor: '#e2e8f0',
     sidebarTextColor: '#0f172a',
-    bodyFont: 'font-sans',
+    bodyFont: 'inter',
     pillBgColor: '#dbeafe',
     pillTextColor: '#0f172a',
   },
@@ -47,7 +57,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#ffffff',
     sidebarBorderColor: '#e2e8f0',
     sidebarTextColor: '#0f172a',
-    bodyFont: 'font-serif',
+    bodyFont: 'playfair',
     pillBgColor: '#e2e8f0',
     pillTextColor: '#0f172a',
   },
@@ -60,7 +70,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#0f172a',
     sidebarBorderColor: '#1f2937',
     sidebarTextColor: '#e2e8f0',
-    bodyFont: 'font-sans',
+    bodyFont: 'inter',
     pillBgColor: '#ffffff',
     pillTextColor: '#0f172a',
   },
@@ -72,7 +82,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#fff1f2',
     sidebarBorderColor: '#fecdd3',
     sidebarTextColor: '#0f172a',
-    bodyFont: 'font-serif',
+    bodyFont: 'source-serif',
     pillBgColor: '#ffe4e6',
     pillTextColor: '#9f1239',
   },
@@ -85,7 +95,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#0b1224',
     sidebarBorderColor: '#111827',
     sidebarTextColor: '#e2e8f0',
-    bodyFont: 'font-sans',
+    bodyFont: 'poppins',
     pillBgColor: '#0ea5e9',
     pillTextColor: '#ecfeff',
   },
@@ -98,7 +108,7 @@ const TEMPLATE_STYLES: Record<TemplateStyle, TemplateStyleConfig> = {
     sidebarBgColor: '#0f172a',
     sidebarBorderColor: '#1f2937',
     sidebarTextColor: '#e2e8f0',
-    bodyFont: 'font-sans',
+    bodyFont: 'inter',
     pillBgColor: '#1f2937',
     pillTextColor: '#e0e7ff',
   },
@@ -117,7 +127,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template = '
   const accentColor = themeOverrides?.accentColor || templateStyles.accentColor;
   const headerBgColor = themeOverrides?.headerBgColor || templateStyles.headerBgColor;
   const headerTextColor = themeOverrides?.headerTextColor || templateStyles.headerSubtitleColor;
-  const fontClass = themeOverrides?.bodyFont === 'serif' ? 'font-serif' : templateStyles.bodyFont;
+  const fontClass =
+    FONT_OPTIONS.find((option) => option.id === (themeOverrides?.bodyFont || templateStyles.bodyFont))?.className ||
+    'font-sans';
   const sidebarTextColor = templateStyles.sidebarTextColor;
   const headerContrastBorder = templateStyles.headerGradient ? 'rgba(255,255,255,0.1)' : `${accentColor}1a`;
   const headerBackgroundStyle = templateStyles.headerGradient && !themeOverrides?.headerBgColor
