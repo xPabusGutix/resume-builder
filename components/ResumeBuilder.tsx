@@ -301,7 +301,7 @@ const ResumeBuilder: React.FC = () => {
       const pdf = new jsPDF('p', 'pt', 'letter');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 32;
+      const margin = 0;
 
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
@@ -318,7 +318,8 @@ const ResumeBuilder: React.FC = () => {
         throw new Error('Dimensiones inválidas al generar el PDF.');
       }
 
-      const pageSliceHeight = pageContentHeight / ratio;
+      const pageSliceHeight = Math.floor(pageContentHeight / ratio);
+      const overlap = 12; // small overlap to avoid cutting lines between pages
       let remainingHeight = imgHeight;
       let positionY = 0;
       let pageIndex = 0;
@@ -334,18 +335,43 @@ const ResumeBuilder: React.FC = () => {
           throw new Error('No se pudo preparar el lienzo para el PDF.');
         }
 
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, imgWidth, sliceHeight);
         ctx.drawImage(canvas, 0, positionY, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
 
-        const imgData = sliceCanvas.toDataURL('image/png');
+        const imgData = await new Promise<string>((resolve, reject) => {
+          sliceCanvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('No se pudo preparar la imagen del PDF.'));
+                return;
+              }
+
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                  resolve(reader.result);
+                } else {
+                  reject(new Error('No se pudo codificar la imagen del PDF.'));
+                }
+              };
+              reader.onerror = () => reject(new Error('Error al leer la imagen del PDF.'));
+              reader.readAsDataURL(blob);
+            },
+            'image/jpeg',
+            0.95,
+          );
+        });
 
         if (pageIndex > 0) {
           pdf.addPage();
         }
 
-        pdf.addImage(imgData, 'PNG', margin, margin, renderWidth, sliceHeight * ratio, undefined, 'FAST');
+        pdf.addImage(imgData, 'JPEG', margin, margin, renderWidth, sliceHeight * ratio, undefined, 'FAST');
 
-        remainingHeight -= sliceHeight;
-        positionY += sliceHeight;
+        const step = Math.max(sliceHeight - overlap, sliceHeight * 0.5);
+        remainingHeight -= step;
+        positionY += step;
         pageIndex += 1;
       }
 
