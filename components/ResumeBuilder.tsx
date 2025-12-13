@@ -489,15 +489,9 @@ const ResumeBuilder: React.FC = () => {
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                  Descargar PDF
                </button>
-             <p className="text-xs text-center text-slate-500 mt-2">
-               Se abrirá el diálogo de impresión. Selecciona <strong>"Guardar como PDF"</strong>.
-             </p>
           </div>
           
-          <div className="no-print mb-4 hidden lg:flex items-center gap-2 text-sm text-slate-500 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
-             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-             Para guardar: Clic en Descargar → Destino: <strong>Guardar como PDF</strong>
-          </div>
+          
 
           <ResumePreview data={resumeData} template={selectedTemplate} themeOverrides={themeOverrides} />
         </div>
