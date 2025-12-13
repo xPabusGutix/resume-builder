@@ -270,13 +270,25 @@ const ResumeBuilder: React.FC = () => {
       const html2canvas = html2canvasModule.default;
       const { jsPDF } = jsPDFModule;
 
+      const rect = previewElement.getBoundingClientRect();
+
       const canvas = await html2canvas(previewElement, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: previewElement.scrollWidth,
-        windowHeight: previewElement.scrollHeight,
+        width: rect.width,
+        height: rect.height,
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.clientWidth,
+        windowHeight: document.documentElement.clientHeight,
       });
+
+      if (canvas.width === 0 || canvas.height === 0) {
+        throw new Error('La captura del PDF no produjo contenido.');
+      }
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'pt', 'letter');
