@@ -118,6 +118,37 @@ const themePresets: { id: string; name: string; accentColor: string; headerBgCol
   },
 ];
 
+const quickSteps = [
+  {
+    title: 'Carga tu base',
+    description: 'Importa tu docx o pega texto plano para mantener tu voz.',
+    icon: (
+      <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a2 2 0 00-.586-1.414l-5.414-5.414A2 2 0 0011.586 2H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6M9 17h3" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Personaliza en vivo',
+    description: 'Prueba plantillas, colores y tipografías sin perder contenido.',
+    icon: (
+      <svg className="w-10 h-10 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h7" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Entrega pulida',
+    description: 'Descarga en PDF carta listo para impresión y ATS friendly.',
+    icon: (
+      <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16l4 4 4-4m-4 4V4" />
+      </svg>
+    ),
+  },
+];
+
 const mergeResumeData = (incoming: ResumeData, current: ResumeData): ResumeData => {
   const safeList = (items?: string[]) => items?.filter((item) => Boolean(item && item.trim().length > 0)) ?? [];
 
@@ -364,6 +395,67 @@ const ResumeBuilder: React.FC = () => {
         </div>
       </nav>
 
+      <section className="max-w-7xl mx-auto w-full px-4 lg:px-8 pt-6 pb-2 no-print">
+        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-slate-900 text-white shadow-2xl">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 p-6 md:p-10 items-center">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/15 text-xs uppercase tracking-[0.3em] font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" aria-hidden />
+                Mejorado para Puerto Rico
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black font-serif leading-tight">Construye un CV listo para compartir en minutos</h1>
+              <p className="text-blue-100 text-lg leading-relaxed max-w-3xl">
+                Visualiza cambios en vivo, aplica plantillas curadas y descarga en PDF carta optimizado para ATS sin perder tu voz.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm font-semibold text-white/90">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                  Descargas ilimitadas
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10v2m0 10v2" /></svg>
+                  Guardamos tus colores
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6l4 2" /></svg>
+                  Ideal para entrevistas rápidas
+                </span>
+              </div>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 md:p-6 backdrop-blur-sm shadow-lg space-y-4">
+              <div className="flex items-center justify-between text-sm text-blue-50">
+                <span className="font-semibold">Lista de verificación</span>
+                <span className="px-2 py-1 rounded-full bg-emerald-400/20 border border-emerald-200/30 text-emerald-50 text-[11px] font-bold">+8 puntos ATS</span>
+              </div>
+              <div className="grid sm:grid-cols-3 gap-3">
+                {quickSteps.map((step) => (
+                  <div key={step.title} className="rounded-lg bg-white/5 border border-white/10 p-4 flex flex-col gap-3 shadow-inner">
+                    <div className="flex items-center justify-between">
+                      {step.icon}
+                      <span className="w-2 h-2 rounded-full bg-white/40" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-bold text-white">{step.title}</p>
+                      <p className="text-xs text-blue-100 leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-3 text-xs text-blue-100">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping" aria-hidden />
+                  Guardamos los cambios en tu navegador
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <span className="w-2 h-2 rounded-full bg-amber-300" aria-hidden />
+                  Revisa la vista previa antes de exportar
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mobile Tabs */}
       <div className="lg:hidden bg-white border-b border-gray-200 sticky top-20 z-40 no-print shadow-sm">
         <div className="flex text-sm font-medium text-center text-gray-500">
@@ -579,7 +671,18 @@ const ResumeBuilder: React.FC = () => {
 
 
           <div className="w-full flex justify-center lg:sticky lg:top-28">
-            <ResumePreview data={resumeData} template={selectedTemplate} themeOverrides={themeOverrides} />
+            <div className="w-full max-w-5xl bg-white border border-gray-200 rounded-2xl shadow-2xl shadow-gray-200/60 p-4 lg:p-6">
+              <div className="flex items-center justify-between pb-4 border-b border-gray-100 text-sm text-slate-600">
+                <div className="flex items-center gap-2 font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden />
+                  Vista previa en vivo
+                </div>
+                <span className="px-2 py-1 rounded-full bg-slate-100 text-[11px] font-bold text-slate-700">Carta · 8.5x11</span>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-gray-100 shadow-inner bg-gray-50">
+                <ResumePreview data={resumeData} template={selectedTemplate} themeOverrides={themeOverrides} />
+              </div>
+            </div>
           </div>
         </div>
 
