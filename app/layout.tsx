@@ -55,22 +55,16 @@ export default function RootLayout({
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
-            body * {
-              visibility: hidden;
-            }
-            #resume-preview, #resume-preview * {
-              visibility: visible;
-            }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
 
             #resume-preview {
+              display: block !important;
               width: 8.5in !important;
               max-width: 8.5in !important;
               min-height: 11in !important;
               margin: 0 auto !important;
               box-shadow: none !important;
-              visibility: visible;
               position: relative;
               top: auto;
               left: auto;
