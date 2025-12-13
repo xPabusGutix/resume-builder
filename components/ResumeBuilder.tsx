@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { jsPDF } from 'jspdf';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
@@ -262,123 +261,29 @@ const ResumeBuilder: React.FC = () => {
       return;
     }
 
-    const { width: rectWidth, height: rectHeight } =
-      previewElement.getBoundingClientRect();
-    const computedWidth = Math.max(
-      previewElement.scrollWidth,
-      Math.round(rectWidth)
-    );
-    const computedHeight = Math.max(
-      previewElement.scrollHeight,
-      Math.round(rectHeight)
-    );
-
-    if (!computedWidth || !computedHeight) {
-      alert('No se pudo preparar la vista previa para generar el PDF.');
-      if (!previousMobileState) {
-        setShowPreviewMobile(previousMobileState);
-      }
-      setIsDownloading(false);
-      return;
-    }
-
     previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    await wait(250);
+    await wait(350);
 
-    try {
-      const html2canvas = (await import('html2canvas')).default;
+    const awaitPrint = () =>
+      new Promise<void>((resolve) => {
+        const cleanup = () => {
+          window.removeEventListener('afterprint', handleAfterPrint);
+          resolve();
+        };
 
-      const canvas = await html2canvas(previewElement, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        width: computedWidth,
-        height: computedHeight,
-        windowWidth: Math.max(computedWidth, window.innerWidth),
-        windowHeight: Math.max(computedHeight, window.innerHeight),
+        const handleAfterPrint = () => cleanup();
+
+        window.addEventListener('afterprint', handleAfterPrint, { once: true });
+        setTimeout(cleanup, 2000);
       });
 
-      const pdf = new jsPDF('p', 'pt', 'letter');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 0;
-
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-
-      if (!imgWidth || !imgHeight) {
-        throw new Error('No se pudo capturar la vista previa del CV.');
-      }
-
-      const renderWidth = pageWidth - margin * 2;
-      const ratio = renderWidth / imgWidth;
-      const pageContentHeight = pageHeight - margin * 2;
-
-      if ([renderWidth, ratio, pageContentHeight].some((value) => !Number.isFinite(value))) {
-        throw new Error('Dimensiones inválidas al generar el PDF.');
-      }
-
-      const pageSliceHeight = Math.floor(pageContentHeight / ratio);
-      const overlap = 12; // small overlap to avoid cutting lines between pages
-      let remainingHeight = imgHeight;
-      let positionY = 0;
-      let pageIndex = 0;
-
-      while (remainingHeight > 0) {
-        const sliceHeight = Math.min(pageSliceHeight, remainingHeight);
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = imgWidth;
-        sliceCanvas.height = sliceHeight;
-
-        const ctx = sliceCanvas.getContext('2d');
-        if (!ctx) {
-          throw new Error('No se pudo preparar el lienzo para el PDF.');
-        }
-
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, imgWidth, sliceHeight);
-        ctx.drawImage(canvas, 0, positionY, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
-
-        const imgData = await new Promise<string>((resolve, reject) => {
-          sliceCanvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error('No se pudo preparar la imagen del PDF.'));
-                return;
-              }
-
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                if (typeof reader.result === 'string') {
-                  resolve(reader.result);
-                } else {
-                  reject(new Error('No se pudo codificar la imagen del PDF.'));
-                }
-              };
-              reader.onerror = () => reject(new Error('Error al leer la imagen del PDF.'));
-              reader.readAsDataURL(blob);
-            },
-            'image/jpeg',
-            0.95,
-          );
-        });
-
-        if (pageIndex > 0) {
-          pdf.addPage();
-        }
-
-        pdf.addImage(imgData, 'JPEG', margin, margin, renderWidth, sliceHeight * ratio, undefined, 'FAST');
-
-        const step = Math.max(sliceHeight - overlap, sliceHeight * 0.5);
-        remainingHeight -= step;
-        positionY += step;
-        pageIndex += 1;
-      }
-
-      pdf.save(`${resumeData.personalInfo.fullName || 'resume'}.pdf`);
+    try {
+      const printPromise = awaitPrint();
+      window.print();
+      await printPromise;
     } catch (error) {
-      console.error('Error generando el PDF', error);
-      alert('No se pudo generar el PDF. Intenta nuevamente o utiliza la opción de imprimir como PDF de tu navegador.');
+      console.error('Error al intentar imprimir/guardar en PDF', error);
+      alert('No se pudo iniciar la impresión. Intenta nuevamente o utiliza la opción de imprimir como PDF de tu navegador.');
     } finally {
       if (!previousMobileState) {
         setShowPreviewMobile(previousMobileState);
@@ -386,6 +291,7 @@ const ResumeBuilder: React.FC = () => {
       setIsDownloading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
