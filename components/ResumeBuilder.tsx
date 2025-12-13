@@ -276,14 +276,12 @@ const ResumeBuilder: React.FC = () => {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: rect.width,
-        height: rect.height,
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY,
-        scrollX: -window.scrollX,
-        scrollY: -window.scrollY,
-        windowWidth: document.documentElement.clientWidth,
-        windowHeight: document.documentElement.clientHeight,
+        width: previewElement.scrollWidth,
+        height: previewElement.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: previewElement.scrollWidth,
+        windowHeight: previewElement.scrollHeight,
       });
 
       if (canvas.width === 0 || canvas.height === 0) {
@@ -304,8 +302,8 @@ const ResumeBuilder: React.FC = () => {
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
         heightLeft -= pageHeight;
         if (heightLeft > 0) {
+          position -= pageHeight;
           pdf.addPage();
-          position = heightLeft - imgHeight;
         }
       }
 
