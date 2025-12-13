@@ -525,81 +525,108 @@ const ResumeBuilder: React.FC = () => {
                <button
                  type="button"
                  onClick={() => setThemeOverrides(templateThemeDefaults[selectedTemplate])}
-                 className="text-xs font-semibold text-pr-blue hover:text-pr-dark-blue underline underline-offset-4"
+                className="text-xs font-semibold text-pr-blue hover:text-pr-dark-blue underline underline-offset-4 whitespace-nowrap ml-4"
                >
                  Restablecer
                </button>
              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-                  Color de acento
-                  <input
-                   type="color"
-                   value={themeOverrides.accentColor}
-                   onChange={(e) => setThemeOverrides((prev) => ({ ...prev, accentColor: e.target.value }))}
-                   className="h-10 w-full rounded border border-gray-200 cursor-pointer"
-                 />
-               </label>
+             {/* Color Picker Section */}
+              <div className="mb-8">
+                <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-pr-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.5a1 1 0 00-.8.4l-4.5 5.4a1 1 0 00-.8 1.6H7z"></path></svg>
+                  Colores
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-slate-700">Color de acento</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={themeOverrides.accentColor}
+                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, accentColor: e.target.value }))}
+                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
+                      />
+                      <div className="flex-1">
+                        <p className="text-xs text-slate-500">Usado en botones,</p>
+                        <p className="text-xs text-slate-500">títulos y acentos</p>
+                      </div>
+                    </div>
+                  </div>
 
-               <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-                 Fondo del encabezado
-                 <input
-                   type="color"
-                   value={themeOverrides.headerBgColor}
-                   onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerBgColor: e.target.value }))}
-                   className="h-10 w-full rounded border border-gray-200 cursor-pointer"
-                 />
-               </label>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-slate-700">Fondo encabezado</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={themeOverrides.headerBgColor}
+                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerBgColor: e.target.value }))}
+                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
+                      />
+                      <div className="flex-1">
+                        <p className="text-xs text-slate-500">Color de fondo</p>
+                        <p className="text-xs text-slate-500">del encabezado</p>
+                      </div>
+                    </div>
+                  </div>
 
-              <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-                Texto del encabezado
-                <input
-                  type="color"
-                  value={themeOverrides.headerTextColor}
-                  onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerTextColor: e.target.value }))}
-                  className="h-10 w-full rounded border border-gray-200 cursor-pointer"
-                />
-              </label>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-slate-700">Texto encabezado</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={themeOverrides.headerTextColor}
+                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerTextColor: e.target.value }))}
+                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
+                      />
+                      <div className="flex-1">
+                        <p className="text-xs text-slate-500">Color del texto</p>
+                        <p className="text-xs text-slate-500">en el encabezado</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-               <div className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-                 Tipografía principal
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+             {/* Typography Section */}
+              <div className="mb-8">
+                <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-pr-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                  Tipografía
+                </h3>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {FONT_OPTIONS.map((font) => (
                     <button
                       key={font.id}
                       type="button"
                       onClick={() => setThemeOverrides((prev) => ({ ...prev, bodyFont: font.id }))}
-                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                      className={`flex items-center justify-between gap-3 p-4 rounded-lg border-2 transition-all ${
                         themeOverrides.bodyFont === font.id
-                          ? 'border-pr-blue bg-blue-50 text-pr-blue shadow-sm'
-                          : 'border-gray-200 bg-white hover:border-pr-blue/40'
+                          ? 'border-pr-blue bg-blue-50/50 shadow-md'
+                          : 'border-slate-200 bg-white hover:border-pr-blue/30 hover:shadow-sm'
                       }`}
                     >
                       <div className="flex flex-col text-left">
-                        <span className={`${font.className} text-base`}>{font.label}</span>
-                        <span className="text-[11px] font-normal text-slate-500">{font.description}</span>
+                        <span className={`${font.className} text-base font-semibold`}>{font.label}</span>
+                        <span className="text-xs font-normal text-slate-500 mt-0.5">{font.description}</span>
                       </div>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full border ${
-                          themeOverrides.bodyFont === font.id
-                            ? 'border-pr-blue bg-white/80 text-pr-blue'
-                            : 'border-gray-200 bg-slate-50 text-slate-600'
-                        }`}
-                      >
-                        {font.category}
-                      </span>
+                      {themeOverrides.bodyFont === font.id && (
+                        <svg className="w-5 h-5 text-pr-blue flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                      )}
                     </button>
                   ))}
                  </div>
-               </div>
               </div>
 
-              <div className="mt-2">
-                <div className="flex items-center justify-between mb-3">
+              {/* Quick Themes Section */}
+              <div className="pt-6 border-t border-slate-200">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-800">Temas rápidos</h3>
-                    <p className="text-xs text-slate-500">Aplica una combinación curada en un click.</p>
+                    <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <svg className="w-4 h-4 text-pr-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                      Combinaciones rápidas
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">Aplica una combinación curada en un click</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -610,18 +637,18 @@ const ResumeBuilder: React.FC = () => {
                         key={preset.id}
                         type="button"
                         onClick={() => setThemeOverrides(preset)}
-                        className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-pr-blue/60 hover:-translate-y-[1px] transition shadow-sm bg-white"
+                        className="flex items-center justify-between gap-3 p-4 rounded-lg border-2 border-slate-200 hover:border-pr-blue/60 hover:shadow-md transition-all bg-white hover:-translate-y-0.5"
                       >
                         <div className="flex flex-col text-left">
                           <span className="text-sm font-bold text-slate-800">{preset.name}</span>
-                          <span className="text-xs text-slate-500">
-                            {presetFont ? `Tipografía ${presetFont.category} · ${presetFont.label}` : 'Tipografía personalizada'}
+                          <span className="text-xs text-slate-500 mt-1">
+                            {presetFont ? `${presetFont.label}` : 'Tipografía personalizada'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerBgColor }}></span>
-                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.accentColor }}></span>
-                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerTextColor }}></span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-7 h-7 rounded-full border-2 border-slate-300" style={{ backgroundColor: preset.headerBgColor }}></span>
+                          <span className="w-7 h-7 rounded-full border-2 border-slate-300" style={{ backgroundColor: preset.accentColor }}></span>
+                          <span className="w-7 h-7 rounded-full border-2 border-slate-300" style={{ backgroundColor: preset.headerTextColor }}></span>
                         </div>
                       </button>
                     );
