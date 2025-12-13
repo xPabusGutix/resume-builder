@@ -266,22 +266,36 @@ const ResumeBuilder: React.FC = () => {
     const html2canvasModule = await import('html2canvas');
     const jsPDFModule = await import('jspdf');
 
+    let clonedPreview: HTMLElement | null = null;
+
     try {
       const html2canvas = html2canvasModule.default;
       const { jsPDF } = jsPDFModule;
 
-      const rect = previewElement.getBoundingClientRect();
+      clonedPreview = previewElement.cloneNode(true) as HTMLElement;
+      clonedPreview.id = 'resume-preview-clone';
+      clonedPreview.style.position = 'absolute';
+      clonedPreview.style.left = '-99999px';
+      clonedPreview.style.top = '0';
+      clonedPreview.style.margin = '0';
+      clonedPreview.style.maxWidth = `${previewElement.scrollWidth}px`;
+      clonedPreview.style.width = `${previewElement.scrollWidth}px`;
+      clonedPreview.style.height = `${previewElement.scrollHeight}px`;
+      clonedPreview.style.minHeight = `${previewElement.scrollHeight}px`;
+      clonedPreview.style.boxShadow = 'none';
 
-      const canvas = await html2canvas(previewElement, {
+      document.body.appendChild(clonedPreview);
+
+      const canvas = await html2canvas(clonedPreview, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: previewElement.scrollWidth,
-        height: previewElement.scrollHeight,
+        width: clonedPreview.scrollWidth,
+        height: clonedPreview.scrollHeight,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: previewElement.scrollWidth,
-        windowHeight: previewElement.scrollHeight,
+        windowWidth: clonedPreview.scrollWidth,
+        windowHeight: clonedPreview.scrollHeight,
       });
 
       if (canvas.width === 0 || canvas.height === 0) {
@@ -312,6 +326,8 @@ const ResumeBuilder: React.FC = () => {
       console.error('Error al generar el PDF automáticamente', error);
       alert('No se pudo generar el PDF. Intenta nuevamente.');
     } finally {
+      clonedPreview?.remove();
+
       if (!previousMobileState) {
         setShowPreviewMobile(previousMobileState);
       }
