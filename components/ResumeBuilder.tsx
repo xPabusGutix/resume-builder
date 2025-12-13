@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
-import { ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
+import { FONT_OPTIONS, FontFamilyId, ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
 
 const templates: { id: TemplateStyle; name: string; description: string; badge: string }[] = [
   {
@@ -49,48 +49,48 @@ const templateThemeDefaults: Record<TemplateStyle, Required<ThemeOverrides>> = {
     accentColor: '#2563eb',
     headerBgColor: '#0f172a',
     headerTextColor: '#bfdbfe',
-    bodyFont: 'sans',
+    bodyFont: 'inter',
   },
   minimal: {
     accentColor: '#1f2937',
     headerBgColor: '#ffffff',
     headerTextColor: '#2563eb',
-    bodyFont: 'serif',
+    bodyFont: 'playfair',
   },
   contrast: {
     accentColor: '#fef08a',
     headerBgColor: '#0f172a',
     headerTextColor: '#fef08a',
-    bodyFont: 'sans',
+    bodyFont: 'inter',
   },
   elegant: {
     accentColor: '#be123c',
     headerBgColor: '#f8fafc',
     headerTextColor: '#9d174d',
-    bodyFont: 'serif',
+    bodyFont: 'source-serif',
   },
   vibrant: {
     accentColor: '#22d3ee',
     headerBgColor: '#0f172a',
     headerTextColor: '#cffafe',
-    bodyFont: 'sans',
+    bodyFont: 'poppins',
   },
   technical: {
     accentColor: '#7c3aed',
     headerBgColor: '#0a0f1f',
     headerTextColor: '#7dd3fc',
-    bodyFont: 'sans',
+    bodyFont: 'inter',
   },
 };
 
-const themePresets: { id: string; name: string; accentColor: string; headerBgColor: string; headerTextColor: string; bodyFont: 'sans' | 'serif'; }[] = [
+const themePresets: { id: string; name: string; accentColor: string; headerBgColor: string; headerTextColor: string; bodyFont: FontFamilyId; }[] = [
   {
     id: 'atlantic',
     name: 'Atlántico',
     accentColor: '#0ea5e9',
     headerBgColor: '#0f172a',
     headerTextColor: '#bae6fd',
-    bodyFont: 'sans',
+    bodyFont: 'inter',
   },
   {
     id: 'sunset',
@@ -98,7 +98,7 @@ const themePresets: { id: string; name: string; accentColor: string; headerBgCol
     accentColor: '#fb923c',
     headerBgColor: '#1c1917',
     headerTextColor: '#fed7aa',
-    bodyFont: 'serif',
+    bodyFont: 'playfair',
   },
   {
     id: 'forest',
@@ -106,7 +106,7 @@ const themePresets: { id: string; name: string; accentColor: string; headerBgCol
     accentColor: '#22c55e',
     headerBgColor: '#0b1725',
     headerTextColor: '#bbf7d0',
-    bodyFont: 'sans',
+    bodyFont: 'lato',
   },
   {
     id: 'sand',
@@ -114,7 +114,7 @@ const themePresets: { id: string; name: string; accentColor: string; headerBgCol
     accentColor: '#d97706',
     headerBgColor: '#fffbeb',
     headerTextColor: '#92400e',
-    bodyFont: 'serif',
+    bodyFont: 'source-serif',
   },
 ];
 
@@ -435,35 +435,47 @@ const ResumeBuilder: React.FC = () => {
                  />
                </label>
 
-               <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-                 Texto del encabezado
-                 <input
-                   type="color"
-                   value={themeOverrides.headerTextColor}
-                   onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerTextColor: e.target.value }))}
-                   className="h-10 w-full rounded border border-gray-200 cursor-pointer"
-                 />
-               </label>
+              <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                Texto del encabezado
+                <input
+                  type="color"
+                  value={themeOverrides.headerTextColor}
+                  onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerTextColor: e.target.value }))}
+                  className="h-10 w-full rounded border border-gray-200 cursor-pointer"
+                />
+              </label>
 
-                <div className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-                  Tipografía principal
-                  <div className="flex gap-2">
-                   <button
-                     type="button"
-                     onClick={() => setThemeOverrides((prev) => ({ ...prev, bodyFont: 'sans' }))}
-                     className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition ${themeOverrides.bodyFont === 'sans' ? 'border-pr-blue bg-blue-50 text-pr-blue' : 'border-gray-200 bg-white hover:border-pr-blue/40'}`}
-                   >
-                     Sans
-                   </button>
-                   <button
-                     type="button"
-                     onClick={() => setThemeOverrides((prev) => ({ ...prev, bodyFont: 'serif' }))}
-                     className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition ${themeOverrides.bodyFont === 'serif' ? 'border-pr-blue bg-blue-50 text-pr-blue' : 'border-gray-200 bg-white hover:border-pr-blue/40'}`}
-                   >
-                     Serif
-                   </button>
-                  </div>
-                </div>
+               <div className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+                 Tipografía principal
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {FONT_OPTIONS.map((font) => (
+                    <button
+                      key={font.id}
+                      type="button"
+                      onClick={() => setThemeOverrides((prev) => ({ ...prev, bodyFont: font.id }))}
+                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                        themeOverrides.bodyFont === font.id
+                          ? 'border-pr-blue bg-blue-50 text-pr-blue shadow-sm'
+                          : 'border-gray-200 bg-white hover:border-pr-blue/40'
+                      }`}
+                    >
+                      <div className="flex flex-col text-left">
+                        <span className={`${font.className} text-base`}>{font.label}</span>
+                        <span className="text-[11px] font-normal text-slate-500">{font.description}</span>
+                      </div>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full border ${
+                          themeOverrides.bodyFont === font.id
+                            ? 'border-pr-blue bg-white/80 text-pr-blue'
+                            : 'border-gray-200 bg-slate-50 text-slate-600'
+                        }`}
+                      >
+                        {font.category}
+                      </span>
+                    </button>
+                  ))}
+                 </div>
+               </div>
               </div>
 
               <div className="mt-2">
@@ -474,24 +486,29 @@ const ResumeBuilder: React.FC = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {themePresets.map((preset) => (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => setThemeOverrides(preset)}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-pr-blue/60 hover:-translate-y-[1px] transition shadow-sm bg-white"
-                    >
-                      <div className="flex flex-col text-left">
-                        <span className="text-sm font-bold text-slate-800">{preset.name}</span>
-                        <span className="text-xs text-slate-500">{preset.bodyFont === 'serif' ? 'Tipografía Serif' : 'Tipografía Sans'}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerBgColor }}></span>
-                        <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.accentColor }}></span>
-                        <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerTextColor }}></span>
-                      </div>
-                    </button>
-                  ))}
+                  {themePresets.map((preset) => {
+                    const presetFont = FONT_OPTIONS.find((font) => font.id === preset.bodyFont);
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setThemeOverrides(preset)}
+                        className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-pr-blue/60 hover:-translate-y-[1px] transition shadow-sm bg-white"
+                      >
+                        <div className="flex flex-col text-left">
+                          <span className="text-sm font-bold text-slate-800">{preset.name}</span>
+                          <span className="text-xs text-slate-500">
+                            {presetFont ? `Tipografía ${presetFont.category} · ${presetFont.label}` : 'Tipografía personalizada'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerBgColor }}></span>
+                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.accentColor }}></span>
+                          <span className="w-8 h-8 rounded-full border" style={{ backgroundColor: preset.headerTextColor }}></span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -25,8 +25,13 @@ export default function RootLayout({
                 theme: {
                   extend: {
                     fontFamily: {
-                      sans: ['Lato', 'sans-serif'],
-                      serif: ['Playfair Display', 'serif'],
+                      sans: ['Lato', 'Inter', 'sans-serif'],
+                      serif: ['Playfair Display', 'Source Serif 4', 'serif'],
+                      inter: ['Inter', 'sans-serif'],
+                      playfair: ['Playfair Display', 'serif'],
+                      lato: ['Lato', 'sans-serif'],
+                      poppins: ['Poppins', 'sans-serif'],
+                      'source-serif': ['"Source Serif 4"', 'serif'],
                     },
                     colors: {
                       'pr-blue': '#00509d',
@@ -97,7 +102,10 @@ export default function RootLayout({
         {/* Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,700&family=Poppins:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="bg-gray-100 text-slate-800">
         {children}
