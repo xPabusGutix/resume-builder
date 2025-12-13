@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { FONT_OPTIONS, FontFamilyId, ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
@@ -190,20 +190,8 @@ const ResumeBuilder: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateStyle>('modern');
   const [themeOverrides, setThemeOverrides] = useState<Required<ThemeOverrides>>(templateThemeDefaults.modern);
-
-  useEffect(() => {
-    const handleResize = () => {
-        setIsMobile(window.innerWidth < 1024);
-    };
-    // Set initial
-    handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleGenerate = useCallback(async ({ text, jobDescription, jobLink }: ResumeGenerationRequest) => {
     setIsLoading(true);
@@ -239,18 +227,29 @@ const ResumeBuilder: React.FC = () => {
     setIsDownloading(true);
 
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-    const shouldRevealPreview = isMobile && !showPreviewMobile;
     const previousMobileState = showPreviewMobile;
 
-    if (shouldRevealPreview) {
-      setShowPreviewMobile(true);
-      await wait(450);
-    }
+    const revealPreviewIfHidden = async () => {
+      const preview = document.getElementById('resume-preview');
+      const hasSize = preview instanceof HTMLElement && preview.offsetHeight > 0 && preview.offsetWidth > 0;
+
+      if (!hasSize) {
+        setShowPreviewMobile(true);
+        await wait(500);
+      }
+
+      const refreshedPreview = document.getElementById('resume-preview');
+      if (!(refreshedPreview instanceof HTMLElement) || refreshedPreview.offsetHeight === 0 || refreshedPreview.offsetWidth === 0) {
+        return null;
+      }
+
+      return refreshedPreview;
+    };
+
+    const previewElement = await revealPreviewIfHidden();
 
     await (document.fonts?.ready ?? Promise.resolve());
     await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
-
-    const previewElement = document.getElementById('resume-preview');
 
     if (!(previewElement instanceof HTMLElement)) {
       alert('No se encontró la vista previa para generar el PDF.');
@@ -267,17 +266,41 @@ const ResumeBuilder: React.FC = () => {
     const html2canvasModule = await import('html2canvas');
     const jsPDFModule = await import('jspdf');
 
+    let clonedPreview: HTMLElement | null = null;
+
     try {
       const html2canvas = html2canvasModule.default;
       const { jsPDF } = jsPDFModule;
 
-      const canvas = await html2canvas(previewElement, {
+      clonedPreview = previewElement.cloneNode(true) as HTMLElement;
+      clonedPreview.id = 'resume-preview-clone';
+      clonedPreview.style.position = 'absolute';
+      clonedPreview.style.left = '-99999px';
+      clonedPreview.style.top = '0';
+      clonedPreview.style.margin = '0';
+      clonedPreview.style.maxWidth = `${previewElement.scrollWidth}px`;
+      clonedPreview.style.width = `${previewElement.scrollWidth}px`;
+      clonedPreview.style.height = `${previewElement.scrollHeight}px`;
+      clonedPreview.style.minHeight = `${previewElement.scrollHeight}px`;
+      clonedPreview.style.boxShadow = 'none';
+
+      document.body.appendChild(clonedPreview);
+
+      const canvas = await html2canvas(clonedPreview, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: previewElement.scrollWidth,
-        windowHeight: previewElement.scrollHeight,
+        width: clonedPreview.scrollWidth,
+        height: clonedPreview.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: clonedPreview.scrollWidth,
+        windowHeight: clonedPreview.scrollHeight,
       });
+
+      if (canvas.width === 0 || canvas.height === 0) {
+        throw new Error('La captura del PDF no produjo contenido.');
+      }
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'pt', 'letter');
@@ -293,8 +316,8 @@ const ResumeBuilder: React.FC = () => {
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
         heightLeft -= pageHeight;
         if (heightLeft > 0) {
+          position -= pageHeight;
           pdf.addPage();
-          position = heightLeft - imgHeight;
         }
       }
 
@@ -303,6 +326,8 @@ const ResumeBuilder: React.FC = () => {
       console.error('Error al generar el PDF automáticamente', error);
       alert('No se pudo generar el PDF. Intenta nuevamente.');
     } finally {
+      clonedPreview?.remove();
+
       if (!previousMobileState) {
         setShowPreviewMobile(previousMobileState);
       }
