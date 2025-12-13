@@ -509,16 +509,6 @@ const ResumeBuilder: React.FC = () => {
               <p className="text-blue-100 text-lg leading-relaxed max-w-3xl">
                 Cada currículum generado aquí es gratis y abierto. Con tu aporte mantenemos los servidores, creamos nuevas plantillas y organizamos mentorías para que más boricuas consigan su próxima oportunidad laboral.
               </p>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="rounded-2xl bg-white/5 border border-white/10 p-4 shadow-lg">
-                  <p className="text-4xl font-black text-white">3K+</p>
-                  <p className="text-sm text-blue-100">CVs generados con amor por la comunidad.</p>
-                </div>
-                <div className="rounded-2xl bg-white/5 border border-white/10 p-4 shadow-lg">
-                  <p className="text-4xl font-black text-white">120</p>
-                  <p className="text-sm text-blue-100">Horas de voluntariado aportadas por Code Gym.</p>
-                </div>
-              </div>
               <TeamList />
             </div>
 
