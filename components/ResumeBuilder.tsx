@@ -501,7 +501,9 @@ const ResumeBuilder: React.FC = () => {
         </div>
 
         {/* Preview Side (Right) */}
-        <div className={`flex-grow flex flex-col items-center ${!showPreviewMobile ? 'hidden lg:flex' : 'flex'}`}>
+        <div
+          className={`print-preview-area flex-grow flex flex-col items-center ${!showPreviewMobile ? 'hidden lg:flex' : 'flex'}`}
+        >
           {/* Mobile Print Button */}
           <div className="lg:hidden w-full mb-4 no-print">
              <button

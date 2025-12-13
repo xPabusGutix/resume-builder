@@ -58,6 +58,14 @@ export default function RootLayout({
             .no-print { display: none !important; }
             .print-only { display: block !important; }
 
+            .print-preview-area {
+              display: block !important;
+              visibility: visible !important;
+            }
+            .print-preview-area * {
+              visibility: visible !important;
+            }
+
             #resume-preview {
               display: block !important;
               width: 8.5in !important;
