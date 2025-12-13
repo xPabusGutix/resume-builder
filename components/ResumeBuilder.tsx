@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
@@ -190,6 +189,7 @@ const TeamList = () => {
 const ResumeBuilder: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(INITIAL_RESUME_DATA);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateStyle>('modern');
@@ -236,6 +236,9 @@ const ResumeBuilder: React.FC = () => {
   }, []);
 
   const handleDownloadPDF = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const shouldRevealPreview = isMobile && !showPreviewMobile;
     const previousMobileState = showPreviewMobile;
@@ -252,6 +255,10 @@ const ResumeBuilder: React.FC = () => {
 
     if (!(previewElement instanceof HTMLElement)) {
       alert('No se encontró la vista previa para generar el PDF.');
+      if (!previousMobileState) {
+        setShowPreviewMobile(previousMobileState);
+      }
+      setIsDownloading(false);
       return;
     }
 
@@ -259,6 +266,8 @@ const ResumeBuilder: React.FC = () => {
     await wait(250);
 
     try {
+      const html2canvas = (await import('html2canvas')).default;
+
       const canvas = await html2canvas(previewElement, {
         scale: 2,
         backgroundColor: '#ffffff',
@@ -283,11 +292,12 @@ const ResumeBuilder: React.FC = () => {
       pdf.save(`${resumeData.personalInfo.fullName || 'resume'}.pdf`);
     } catch (error) {
       console.error('Error generando el PDF', error);
-      alert('No se pudo generar el PDF. Inténtalo nuevamente o intenta con otro navegador.');
+      alert('No se pudo generar el PDF. Intenta nuevamente o utiliza la opción de imprimir como PDF de tu navegador.');
     } finally {
       if (!previousMobileState) {
         setShowPreviewMobile(previousMobileState);
       }
+      setIsDownloading(false);
     }
   };
 
@@ -306,9 +316,10 @@ const ResumeBuilder: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
-               <button 
+               <button
                 onClick={handleDownloadPDF}
-                className="hidden md:flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg transform active:scale-95"
+                disabled={isDownloading}
+                className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg transform active:scale-95 ${isDownloading ? 'bg-slate-400 cursor-not-allowed opacity-80' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                >
                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                  Descargar PDF
@@ -475,7 +486,7 @@ const ResumeBuilder: React.FC = () => {
               </div>
             </div>
 
-           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100 text-sm text-slate-700 shadow-sm">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100 text-sm text-slate-700 shadow-sm">
               <h3 className="font-bold mb-3 flex items-center gap-2 text-pr-blue">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Tips para el Mercado de PR
@@ -503,7 +514,8 @@ const ResumeBuilder: React.FC = () => {
           <div className="lg:hidden w-full mb-4 no-print">
              <button
                onClick={handleDownloadPDF}
-                className="w-full flex justify-center items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 px-4 py-4 rounded-xl font-bold transition-colors shadow-lg"
+               disabled={isDownloading}
+               className={`w-full flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold transition-colors shadow-lg ${isDownloading ? 'bg-slate-400 cursor-not-allowed opacity-80' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
               >
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                  Descargar PDF
