@@ -246,75 +246,59 @@ const ResumeBuilder: React.FC = () => {
 
     await wait(75);
 
-    const previewElement = document.getElementById('resume-preview');
+    let previewElement = document.getElementById('resume-preview');
 
     if (!(previewElement instanceof HTMLElement)) {
       alert('No se encontró la vista previa para generar el PDF.');
       return;
     }
 
-    const rect = previewElement.getBoundingClientRect();
-    if (!rect.width || !rect.height) {
-      alert('La vista previa no está lista para exportar. Intenta nuevamente.');
+    // Ensure we have the latest node in case the preview just mounted
+    previewElement = document.getElementById('resume-preview') as HTMLElement | null;
+    if (!(previewElement instanceof HTMLElement)) {
+      alert('No se encontró la vista previa para generar el PDF.');
       return;
     }
 
-    let exportClone: HTMLElement | null = null;
-
-    let exportStyleTag: HTMLStyleElement | null = null;
+    let originalInlineStyles: string | null = null;
 
     try {
       await (document.fonts?.ready ?? Promise.resolve());
+      originalInlineStyles = previewElement.getAttribute('style');
 
-      // Clone the preview so we can render it offscreen at full width without layout shifts
-      exportClone = previewElement.cloneNode(true) as HTMLElement;
-      exportClone.id = 'resume-preview-export';
-      exportClone.style.position = 'fixed';
-      exportClone.style.top = '-200vh';
-      exportClone.style.left = '50%';
-      exportClone.style.transform = 'translateX(-50%)';
-      exportClone.style.display = 'block';
-      exportClone.style.visibility = 'visible';
-      exportClone.style.opacity = '1';
-      exportClone.style.boxShadow = 'none';
-      exportClone.style.maxWidth = '8.5in';
-      exportClone.style.width = '8.5in';
-      exportClone.style.minHeight = '11in';
-      exportClone.style.borderRadius = '0';
-      exportClone.style.border = 'none';
-      exportClone.style.backgroundColor = '#ffffff';
-      exportClone.style.backgroundImage = 'none';
-      exportClone.style.padding = '0';
-      exportClone.style.margin = '0';
-      exportClone.style.height = 'auto';
-      document.body.appendChild(exportClone);
+      const computedStyle = window.getComputedStyle(previewElement);
+      const wasHidden = computedStyle.display === 'none';
 
-      exportStyleTag = document.createElement('style');
-      exportStyleTag.id = 'resume-export-style-tag';
-      exportStyleTag.textContent = `
-        #resume-preview-export, #resume-preview-export * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        #resume-preview-export * {
-          transition: none !important;
-          animation: none !important;
-        }
-      `;
-      document.head.appendChild(exportStyleTag);
+      if (wasHidden) {
+        previewElement.style.display = 'block';
+        previewElement.style.visibility = 'hidden';
+        previewElement.style.position = 'absolute';
+        previewElement.style.inset = '0';
+      }
 
-      await wait(100);
+      previewElement.style.width = '8.5in';
+      previewElement.style.maxWidth = '8.5in';
+      previewElement.style.minHeight = '11in';
+      previewElement.style.borderRadius = '0';
+      previewElement.style.border = 'none';
+      previewElement.style.boxShadow = 'none';
+      previewElement.style.backgroundImage = 'none';
 
-      const cloneRect = exportClone.getBoundingClientRect();
-      const canvas = await html2canvas(exportClone, {
+      await wait(120);
+
+      const rect = previewElement.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        throw new Error('preview-not-ready');
+      }
+
+      const canvas = await html2canvas(previewElement, {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: Math.ceil(cloneRect.width),
-        windowHeight: Math.ceil(exportClone.scrollHeight),
+        windowWidth: Math.ceil(rect.width),
+        windowHeight: Math.ceil(previewElement.scrollHeight),
         scrollX: 0,
         scrollY: 0,
-        foreignObjectRendering: true,
       });
       const imgData = canvas.toDataURL('image/png');
 
@@ -339,13 +323,16 @@ const ResumeBuilder: React.FC = () => {
       pdf.save(`${new Date().toISOString().slice(0, 10)}-resume.pdf`);
     } catch (err) {
       console.error('Error generating PDF', err);
-      alert('No se pudo generar el PDF. Intenta nuevamente.');
-    } finally {
-      if (exportStyleTag?.parentNode) {
-        exportStyleTag.parentNode.removeChild(exportStyleTag);
+      if (err instanceof Error && err.message === 'preview-not-ready') {
+        alert('La vista previa no está lista para exportar. Intenta nuevamente.');
+      } else {
+        alert('No se pudo generar el PDF. Intenta nuevamente.');
       }
-      if (exportClone?.parentNode) {
-        exportClone.parentNode.removeChild(exportClone);
+    } finally {
+      if (originalInlineStyles) {
+        previewElement.setAttribute('style', originalInlineStyles);
+      } else {
+        previewElement.removeAttribute('style');
       }
     }
   };
