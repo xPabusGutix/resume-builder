@@ -335,15 +335,17 @@ const ResumeBuilder: React.FC = () => {
           throw new Error('No se pudo preparar el lienzo para el PDF.');
         }
 
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, imgWidth, sliceHeight);
         ctx.drawImage(canvas, 0, positionY, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
 
-        const imgData = sliceCanvas.toDataURL('image/png');
+        const imgData = sliceCanvas.toDataURL('image/jpeg', 0.95);
 
         if (pageIndex > 0) {
           pdf.addPage();
         }
 
-        pdf.addImage(imgData, 'PNG', margin, margin, renderWidth, sliceHeight * ratio, undefined, 'FAST');
+        pdf.addImage(imgData, 'JPEG', margin, margin, renderWidth, sliceHeight * ratio, undefined, 'FAST');
 
         const step = Math.max(sliceHeight - overlap, sliceHeight * 0.5);
         remainingHeight -= step;
