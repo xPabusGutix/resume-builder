@@ -8,6 +8,7 @@ import {
   HiOutlineAdjustmentsHorizontal,
   HiOutlineArrowDownTray,
   HiOutlineCloudArrowDown,
+  HiOutlineCheckCircle,
   HiOutlineDocumentText,
   HiOutlineSparkles,
   HiOutlineSwatch,
