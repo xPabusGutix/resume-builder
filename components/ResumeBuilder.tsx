@@ -4,6 +4,14 @@ import React, { useState, useCallback } from 'react';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
 import { FONT_OPTIONS, FontFamilyId, ResumePreview, TemplateStyle, ThemeOverrides } from './ResumePreview';
+import {
+  HiOutlineAdjustmentsHorizontal,
+  HiOutlineArrowDownTray,
+  HiOutlineCloudArrowDown,
+  HiOutlineDocumentText,
+  HiOutlineSparkles,
+  HiOutlineSwatch,
+} from 'react-icons/hi2';
 
 const templates: { id: TemplateStyle; name: string; description: string; badge: string }[] = [
   {
@@ -122,30 +130,17 @@ const quickSteps = [
   {
     title: 'Carga tu base',
     description: 'Importa tu docx o pega texto plano para mantener tu voz.',
-    icon: (
-      <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a2 2 0 00-.586-1.414l-5.414-5.414A2 2 0 0011.586 2H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6M9 17h3" />
-      </svg>
-    ),
+    icon: <HiOutlineDocumentText className="w-10 h-10 text-blue-500" />,
   },
   {
     title: 'Personaliza en vivo',
     description: 'Prueba plantillas, colores y tipografías sin perder contenido.',
-    icon: (
-      <svg className="w-10 h-10 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h7" />
-      </svg>
-    ),
+    icon: <HiOutlineAdjustmentsHorizontal className="w-10 h-10 text-indigo-500" />,
   },
   {
     title: 'Entrega pulida',
     description: 'Descarga en PDF carta listo para impresión y ATS friendly.',
-    icon: (
-      <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16l4 4 4-4m-4 4V4" />
-      </svg>
-    ),
+    icon: <HiOutlineCloudArrowDown className="w-10 h-10 text-emerald-500" />,
   },
 ];
 
@@ -357,21 +352,21 @@ const ResumeBuilder: React.FC = () => {
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-br from-pr-blue to-pr-dark-blue p-2 rounded-xl shadow-lg">
-                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <HiOutlineDocumentText className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
                 <span className="font-serif font-bold text-2xl tracking-tight text-slate-800 leading-none">Resume Builder</span>
               </div>
             </div>
             <div className="flex items-center gap-4">
-               <button
+              <button
                 onClick={handleDownloadPDF}
                 disabled={isDownloading}
                 className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg transform active:scale-95 ${isDownloading ? 'bg-slate-400 cursor-not-allowed opacity-80' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
-               >
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                 Descargar PDF
-               </button>
+              >
+                <HiOutlineArrowDownTray className="w-4 h-4" />
+                Descargar PDF
+              </button>
             </div>
           </div>
         </div>
@@ -437,11 +432,14 @@ const ResumeBuilder: React.FC = () => {
             </div>
           </div>
 
-           <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
              <div className="flex items-start justify-between mb-4">
                <div>
                  <h2 className="text-2xl font-bold text-slate-800 font-serif mb-1">3. Personaliza tu look</h2>
-                 <p className="text-slate-600 text-sm">Ajusta colores y tipografía para que el CV refleje tu marca personal.</p>
+                  <p className="text-slate-600 text-sm">
+                    La IA ajusta el tono, los colores y la estructura por ti. Si necesitas cambios, vuelve a pedirlos en el
+                    prompt; aquí solo eliges la tipografía que refleje tu voz.
+                  </p>
                </div>
                <button
                  type="button"
@@ -452,59 +450,17 @@ const ResumeBuilder: React.FC = () => {
                </button>
              </div>
 
-             {/* Color Picker Section */}
               <div className="mb-8">
-                <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-pr-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.5a1 1 0 00-.8.4l-4.5 5.4a1 1 0 00-.8 1.6H7z"></path></svg>
-                  Colores
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-slate-700">Color de acento</label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={themeOverrides.accentColor}
-                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, accentColor: e.target.value }))}
-                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
-                      />
-                      <div className="flex-1">
-                        <p className="text-xs text-slate-500">Usado en botones,</p>
-                        <p className="text-xs text-slate-500">títulos y acentos</p>
-                      </div>
-                    </div>
+                <div className="flex items-start gap-3 p-4 rounded-lg border border-blue-100 bg-blue-50/70">
+                  <div className="p-2 bg-white rounded-md text-pr-blue shadow-sm">
+                    <HiOutlineSparkles className="w-5 h-5" />
                   </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-slate-700">Fondo encabezado</label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={themeOverrides.headerBgColor}
-                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerBgColor: e.target.value }))}
-                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
-                      />
-                      <div className="flex-1">
-                        <p className="text-xs text-slate-500">Color de fondo</p>
-                        <p className="text-xs text-slate-500">del encabezado</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-slate-700">Texto encabezado</label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={themeOverrides.headerTextColor}
-                        onChange={(e) => setThemeOverrides((prev) => ({ ...prev, headerTextColor: e.target.value }))}
-                        className="h-12 w-12 rounded-lg border-2 border-slate-200 cursor-pointer hover:border-pr-blue/50 transition"
-                      />
-                      <div className="flex-1">
-                        <p className="text-xs text-slate-500">Color del texto</p>
-                        <p className="text-xs text-slate-500">en el encabezado</p>
-                      </div>
-                    </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-slate-800">Edición guiada por IA</p>
+                    <p className="text-sm text-slate-600">
+                      Para cualquier ajuste de contenido o tono, escribe nuevas indicaciones en el panel de entrada. El sistema
+                      regenerará la versión con tus cambios y mantendrá la coherencia visual.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -512,8 +468,8 @@ const ResumeBuilder: React.FC = () => {
              {/* Typography Section */}
               <div className="mb-8">
                 <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-pr-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                  Tipografía
+                  <HiOutlineSwatch className="w-4 h-4 text-pr-blue" />
+                  Tipografía (tu única elección manual)
                 </h3>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {FONT_OPTIONS.map((font) => (
@@ -532,9 +488,7 @@ const ResumeBuilder: React.FC = () => {
                         <span className="text-xs font-normal text-slate-500 mt-0.5">{font.description}</span>
                       </div>
                       {themeOverrides.bodyFont === font.id && (
-                        <svg className="w-5 h-5 text-pr-blue flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                        <HiOutlineCheckCircle className="w-5 h-5 text-pr-blue flex-shrink-0" />
                       )}
                     </button>
                   ))}
@@ -560,7 +514,7 @@ const ResumeBuilder: React.FC = () => {
                   <>Generando PDF...</>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <HiOutlineArrowDownTray className="w-5 h-5" />
                     Descargar PDF
                   </>
                 )}

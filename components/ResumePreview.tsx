@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ResumeData } from '../types';
+import { HiOutlineDevicePhoneMobile, HiOutlineEnvelope, HiOutlineLink, HiOutlineMapPin } from 'react-icons/hi2';
 
 export type TemplateStyle = 'modern' | 'minimal' | 'contrast' | 'elegant' | 'vibrant' | 'technical';
 
@@ -236,11 +237,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template = '
             >
               <SectionHeader label="Contacto" accent={accentColor} />
               <div className="space-y-3">
-                {personalInfo.email && <InfoRow icon={<MailIcon />} label={personalInfo.email} />}
-                {personalInfo.phone && <InfoRow icon={<PhoneIcon />} label={personalInfo.phone} />}
-                {personalInfo.location && <InfoRow icon={<LocationIcon />} label={personalInfo.location} />}
-                {personalInfo.linkedin && <InfoRow icon={<LinkIcon />} label={personalInfo.linkedin} />}
-                {personalInfo.website && <InfoRow icon={<LinkIcon />} label={personalInfo.website} />}
+                {personalInfo.email && <InfoRow icon={<HiOutlineEnvelope className="w-4 h-4" />} label={personalInfo.email} />}
+                {personalInfo.phone && (
+                  <InfoRow icon={<HiOutlineDevicePhoneMobile className="w-4 h-4" />} label={personalInfo.phone} />
+                )}
+                {personalInfo.location && <InfoRow icon={<HiOutlineMapPin className="w-4 h-4" />} label={personalInfo.location} />}
+                {personalInfo.linkedin && <InfoRow icon={<HiOutlineLink className="w-4 h-4" />} label={personalInfo.linkedin} />}
+                {personalInfo.website && <InfoRow icon={<HiOutlineLink className="w-4 h-4" />} label={personalInfo.website} />}
               </div>
 
               {skills?.length > 0 && (
@@ -337,36 +340,4 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template = '
     </div>
   );
 };
-
-const MailIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-  </svg>
-);
-
-const PhoneIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-    />
-  </svg>
-);
-
-const LocationIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-);
-
-const LinkIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 015.657 5.657l-3.536 3.536a4 4 0 01-5.657 0" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.172 13.828a4 4 0 010-5.657l3.536-3.536a4 4 0 015.657 5.657" />
-  </svg>
-);
 
