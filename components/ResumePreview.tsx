@@ -170,8 +170,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template = '
   if (htmlResume) {
     return (
       <div
-        id="resume-preview"
-        className={`relative bg-white shadow-2xl w-[8.5in] max-w-[8.5in] min-h-[11in] mx-auto text-slate-800 ${fontClass} print:shadow-none overflow-hidden`}
+        className={`relative bg-white shadow-2xl w-[8.5in] max-w-[8.5in] min-h-[11in] mx-auto text-slate-800 ${fontClass} print:shadow-none overflow-visible`}
         style={{
           printColorAdjust: 'exact',
           WebkitPrintColorAdjust: 'exact',
@@ -189,8 +188,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template = '
 
   return (
     <div
-      id="resume-preview"
-      className={`relative bg-white shadow-2xl w-[8.5in] max-w-[8.5in] min-h-[11in] mx-auto text-slate-800 ${fontClass} print:shadow-none overflow-hidden`}
+      className={`relative bg-white shadow-2xl w-[8.5in] max-w-[8.5in] min-h-[11in] mx-auto text-slate-800 ${fontClass} print:shadow-none overflow-visible`}
       style={{
         printColorAdjust: 'exact',
         WebkitPrintColorAdjust: 'exact',
