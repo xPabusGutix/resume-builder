@@ -1,0 +1,16 @@
+import { SVGProps } from 'react';
+export type IconProps = SVGProps<SVGSVGElement>;
+export const HiOutlineDocumentText: (props: IconProps) => JSX.Element;
+export const HiOutlineAdjustmentsHorizontal: (props: IconProps) => JSX.Element;
+export const HiOutlineCloudArrowDown: (props: IconProps) => JSX.Element;
+export const HiOutlineArrowDownTray: (props: IconProps) => JSX.Element;
+export const HiOutlineArrowUpTray: (props: IconProps) => JSX.Element;
+export const HiOutlineEnvelope: (props: IconProps) => JSX.Element;
+export const HiOutlineDevicePhoneMobile: (props: IconProps) => JSX.Element;
+export const HiOutlineMapPin: (props: IconProps) => JSX.Element;
+export const HiOutlineLink: (props: IconProps) => JSX.Element;
+export const HiOutlineExclamationCircle: (props: IconProps) => JSX.Element;
+export const HiOutlineSparkles: (props: IconProps) => JSX.Element;
+export const HiOutlineCheckCircle: (props: IconProps) => JSX.Element;
+export const HiOutlineSwatch: (props: IconProps) => JSX.Element;
+export const HiOutlineInboxArrowDown: (props: IconProps) => JSX.Element;

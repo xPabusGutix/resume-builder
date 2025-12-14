@@ -1,0 +1,12 @@
+{
+  "name": "react-icons",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "types": "./index.d.ts",
+  "exports": {
+    "./hi2": "./hi2/index.tsx",
+    "./hi2/index.js": "./hi2/index.tsx"
+  }
+}
