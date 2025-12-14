@@ -296,7 +296,7 @@ const ResumeBuilder: React.FC = () => {
       ]);
 
       const canvas = await html2canvas(previewElement, {
-        scale: 2,
+        scale: 2.5,
         useCORS: true,
         backgroundColor: '#ffffff',
         onclone(cloneDocument) {
@@ -312,15 +312,20 @@ const ResumeBuilder: React.FC = () => {
       const pageHeight = pdf.internal.pageSize.getHeight();
 
       const imgData = canvas.toDataURL('image/png');
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const ratio = Math.min(pageWidth / canvasWidth, pageHeight / canvasHeight);
-      const printWidth = canvasWidth * ratio;
-      const printHeight = canvasHeight * ratio;
-      const offsetX = (pageWidth - printWidth) / 2;
-      const offsetY = (pageHeight - printHeight) / 2;
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let position = 0;
 
-      pdf.addImage(imgData, 'PNG', offsetX, offsetY, printWidth, printHeight, undefined, 'FAST');
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      let remainingHeight = imgHeight;
+
+      while (remainingHeight > pageHeight) {
+        position -= pageHeight;
+        remainingHeight -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      }
+
       pdf.save('resume.pdf');
     } catch (error) {
       console.error('Error al generar el PDF automáticamente', error);
