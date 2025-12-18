@@ -181,10 +181,6 @@ export const runLiveInterviewTurn = async (
             },
           },
         },
-        contextWindowCompression: {
-          triggerTokens: '25600',
-          slidingWindow: { targetTokens: '12800' },
-        },
       },
     });
 
