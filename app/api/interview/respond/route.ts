@@ -71,7 +71,6 @@ Prioriza temas de experiencia laboral, proyectos y logro medibles. ${historyCont
           voiceConfig: {
             prebuiltVoiceConfig: { voiceName: 'Kore' },
           },
-          speakingRate: 1.08,
         },
       },
     });

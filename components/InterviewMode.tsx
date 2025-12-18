@@ -79,7 +79,7 @@ const InterviewMode: React.FC = () => {
     async (prompt: string, fromMic = false) => {
       if (!prompt.trim()) return;
       setError(null);
-      const nextHistory = [...messages, { role: 'user', text: prompt }];
+      const nextHistory: InterviewMessage[] = [...messages, { role: 'user', text: prompt }];
       setMessages(nextHistory);
       setManualPrompt('');
       setIsProcessing(true);
