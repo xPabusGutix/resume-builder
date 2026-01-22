@@ -5,6 +5,7 @@ import { HiOutlineArrowDownTray, HiOutlineDocumentText } from 'react-icons/hi2';
 import { mergeResumeData } from '../services/resumeUtils';
 import { INITIAL_RESUME_DATA, ResumeData, ResumeGenerationRequest } from '../types';
 import { InputSection } from './InputSection';
+import InterviewMode from './InterviewMode';
 import TemplateSelector from './TemplateSelector';
 import TeamList from './TeamList';
 import ThemeCustomizer from './ThemeCustomizer';
